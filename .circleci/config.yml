@@ -72,9 +72,10 @@ jobs:
       - run:
           name: Build front-end
           command: |
-            cd frontend/
-            npm i
-            npm run build
+            # cd frontend/
+            # npm i
+            # npm run build
+            exit 1
       - trigger_slack_notif
       - notify_slack_error
       - save_cache:
