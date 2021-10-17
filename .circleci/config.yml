@@ -4,6 +4,32 @@ orbs:
   slack: circleci/slack@4.4.4
 
 commands:
+  notify_slack_error:
+    steps:
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+
+  trigger_slack_notif:
+    steps:
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*This is a text notification*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: always
+  
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
@@ -49,10 +75,8 @@ jobs:
             cd frontend/
             npm i
             npm run build
-      - slack/notify:
-          channel: udapeople
-          event: fail
-          template: basic_fail_1
+      - trigger_slack_notif
+      - notify_slack_error
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -70,10 +94,8 @@ jobs:
             cd backend/
             npm i
             npm run build
-      - slack/notify:
-          channel: udapeople
-          event: fail
-          template: basic_fail_1
+      - trigger_slack_notif
+      - notify_slack_error
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
@@ -91,6 +113,8 @@ jobs:
             cd frontend/
             npm i
             npm run test
+      - trigger_slack_notif
+      - notify_slack_error
                 
   test-backend:
     docker:
@@ -105,6 +129,8 @@ jobs:
             cd backend/
             npm i
             npm run test
+      - trigger_slack_notif
+      - notify_slack_error
             
   scan-frontend:
     docker:
@@ -118,7 +144,9 @@ jobs:
           command: |
             cd frontend/
             npm i    
-            npm audit fix --audit-level=critical 
+            npm audit fix --audit-level=critical
+      - trigger_slack_notif
+      - notify_slack_error
 
   scan-backend:
     docker:
@@ -132,7 +160,9 @@ jobs:
           command: |
             cd backend/
             npm i    
-            npm audit fix --audit-level=critical 
+            npm audit fix --audit-level=critical
+      - trigger_slack_notif
+      - notify_slack_error
 
   deploy-infrastructure:
     docker:
@@ -162,6 +192,8 @@ jobs:
           command: |
             # Your code here
             exit 1
+      - trigger_slack_notif
+      - notify_slack_error
       - persist_to_workspace:
           root: ~/
           paths:
