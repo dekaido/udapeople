@@ -33,19 +33,26 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      # Add parameter here   
+      workflowid:
+        description: unique identifier
+        type: string   
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            # Your code here
-            exit 1
+            aws s3 rm s3://udapeople-<<parameters.workflowid>> --recursive
+            aws cloudformation delete-stack --stack-name InitialStack
+            aws cloudformation delete-stack --stack-name udapeople-backendstack-<<parameters.workflowid>>
+            aws cloudformation delete-stack --stack-name udapeople-frontendstack-<<parameters.workflowid>>
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
-      # Add parameter here     
+    #   workflowid:
+    #     description: unique identifier
+    #     type: string
+          
     steps:
       - run:
           name: Revert migrations
@@ -185,7 +192,7 @@ jobs:
               --tags project=udacity \
               --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}  
-            #   exit 1
+    
       - run:
           name: Ensure front-end infrastructure exist
           command: |
@@ -194,7 +201,7 @@ jobs:
               --tags project=udacity \
               --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} 
-            #   exit 1
+    
       - run:
           name: Add back-end ip to ansible inventory
           command: |
@@ -203,33 +210,34 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
-            # exit 1
+
       - trigger_slack_notif
       - notify_slack_error
       - persist_to_workspace:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      # Here's where you will add some code to rollback on failure      
+      - destroy_environent:
+          workflowid: ${CIRCLE_WORKFLOW_ID:0:7} 
 
-  # configure-infrastructure:
-  #   docker:
-  #     # Docker image here that supports Ansible
-  #   steps:
-  #     # Checkout code from git
-  #     # Add ssh keys with fingerprint
-  #     # attach workspace
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           # Your code here
-  #           exit 1
-  #     - run:
-  #         name: Configure server
-  #         command: |
-  #           # Your code here
-  #           exit 1
-  #     # Here's where you will add some code to rollback on failure      
+  configure-infrastructure:
+    docker:
+      # Docker image here that supports Ansible
+    steps:
+      # Checkout code from git
+      # Add ssh keys with fingerprint
+      # attach workspace
+      - run:
+          name: Install dependencies
+          command: |
+            # Your code here
+            exit 1
+      - run:
+          name: Configure server
+          command: |
+            # Your code here
+            exit 1
+      # Here's where you will add some code to rollback on failure      
 
   # run-migrations:
   #   docker:
@@ -362,8 +370,8 @@ workflows:
           filters:
             branches:
               only: [test-feature-branch]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
