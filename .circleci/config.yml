@@ -5,12 +5,22 @@ orbs:
 
 commands:
   notify_slack_error:
+    description: Notif for when something fails
     steps:
       - slack/notify:
           event: fail
+          mentions: '@dekaido'
           template: basic_fail_1
 
+  notify_slack_success:
+    description: Notif for when something fails
+    steps:
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+
   trigger_slack_notif:
+    description: Notif for when environment is destroyed
     steps:
       - slack/notify:
           custom: |
@@ -21,7 +31,7 @@ commands:
                   "fields": [
                     {
                       "type": "plain_text",
-                      "text": "*This is a text notification*",
+                      "text": "Environment is being destroyed on failure.",
                       "emoji": true
                     }
                   ]
@@ -45,6 +55,7 @@ commands:
             aws cloudformation delete-stack --stack-name InitialStack
             aws cloudformation delete-stack --stack-name udapeople-backendstack-<<parameters.workflowid>>
             aws cloudformation delete-stack --stack-name udapeople-frontendstack-<<parameters.workflowid>>
+      - trigger-slack-notif
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -82,7 +93,6 @@ jobs:
             cd frontend/
             npm i
             npm run build
-      - trigger_slack_notif
       - notify_slack_error
       - save_cache:
           paths: [frontend/node_modules]
@@ -101,7 +111,6 @@ jobs:
             cd backend/
             npm i
             npm run build
-      - trigger_slack_notif
       - notify_slack_error
       - save_cache:
           paths: [backend/node_modules]
@@ -120,7 +129,6 @@ jobs:
             cd frontend/
             npm i
             npm run test
-      - trigger_slack_notif
       - notify_slack_error
                 
   test-backend:
@@ -136,7 +144,6 @@ jobs:
             cd backend/
             npm i
             npm run test
-      - trigger_slack_notif
       - notify_slack_error
             
   scan-frontend:
@@ -152,8 +159,8 @@ jobs:
             cd frontend/
             npm i    
             npm audit fix --audit-level=critical
-      - trigger_slack_notif
       - notify_slack_error
+      - notify_slack_success
 
   scan-backend:
     docker:
@@ -168,8 +175,8 @@ jobs:
             cd backend/
             npm i    
             npm audit fix --audit-level=critical
-      - trigger_slack_notif
       - notify_slack_error
+      - notify_slack_success
 
   deploy-infrastructure:
     docker:
@@ -205,8 +212,8 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
-      - trigger_slack_notif
       - notify_slack_error
+      - notify_slack_success
       - persist_to_workspace:
           root: ~/
           paths:
