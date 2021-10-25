@@ -242,13 +242,13 @@ jobs:
     docker:
       # Docker image here that supports NodeJS
       - image: python:3.7-alpine3.11
-  #   steps:
-  #     # Checkout code from git
-  #     - run:
-  #         name: Run migrations
-  #         command: |
-  #           # Your code here
-  #           exit 1
+    steps:
+      - checkout
+      - run:
+          name: Run migrations
+          command: |
+            # Your code here
+            exit 1
   #     - run:
   #         name: Send migration results to memstash
   #         command: |
