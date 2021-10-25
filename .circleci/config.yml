@@ -223,13 +223,15 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      - image: amazon/aws-cli
+      - image: python:3.7-alpine3.11
     steps:
       # Checkout code from git
       # Add ssh keys with fingerprint
       # attach workspace
       - checkout
-      - attach_to_workspace:
+      - add_ssh_keys:
+          fingerprints: [50:51:f4:59:be:69:ca:00:2f:2f:c7:8f:5e:d8:11:3e]
+      - attach_workspace:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
