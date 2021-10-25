@@ -72,10 +72,9 @@ jobs:
       - run:
           name: Build front-end
           command: |
-            # cd frontend/
-            # npm i
-            # npm run build
-            exit 1
+            cd frontend/
+            npm i
+            npm run build
       - trigger_slack_notif
       - notify_slack_error
       - save_cache:
@@ -199,8 +198,12 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            # Your code here
-            exit 1
+            aws ec2 describe-instances \
+              --filters Name=tag:project,Values=udacity\
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
+            # exit 1
       - trigger_slack_notif
       - notify_slack_error
       - persist_to_workspace:
