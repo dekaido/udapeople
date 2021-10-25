@@ -55,7 +55,7 @@ commands:
             aws cloudformation delete-stack --stack-name InitialStack
             aws cloudformation delete-stack --stack-name udapeople-backendstack-<<parameters.workflowid>>
             aws cloudformation delete-stack --stack-name udapeople-frontendstack-<<parameters.workflowid>>
-      - trigger-slack-notif
+      - trigger_slack_notif
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
