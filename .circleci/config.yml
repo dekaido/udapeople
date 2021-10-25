@@ -173,11 +173,8 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      # Docker image here that supports AWS CLI
         - image: amazon/aws-cli
-
     steps:
-      # Checkout code from git
       - checkout
       - run:
           name: Install dependencies
@@ -192,7 +189,6 @@ jobs:
               --tags project=udacity \
               --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}  
-    
       - run:
           name: Ensure front-end infrastructure exist
           command: |
@@ -200,8 +196,7 @@ jobs:
               --template-file .circleci/files/frontend.yml \
               --tags project=udacity \
               --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} 
-    
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Add back-end ip to ansible inventory
           command: |
@@ -210,7 +205,6 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
-
       - trigger_slack_notif
       - notify_slack_error
       - persist_to_workspace:
@@ -229,21 +223,25 @@ jobs:
           fingerprints: [50:51:f4:59:be:69:ca:00:2f:2f:c7:8f:5e:d8:11:3e]
       - attach_workspace:
           at: ~/
-    #   - run:
-    #       name: Install dependencies
-    #       command: |
-    #         # Your code here
-    #         exit 1
-    #   - run:
-    #       name: Configure server
-    #       command: |
-    #         # Your code here
-    #         exit 1
-      # Here's where you will add some code to rollback on failure      
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update tar
+            apk add --update gzip
+            apk add --update ansible
+            pip install awscli
+      - run:
+          name: Configure server
+          command: |
+            # Your code here
+            exit 1
+      - destroy-environment:
+          workflowid: ${CIRCLE_WORKFLOW_ID:0:7} 
 
-  # run-migrations:
-  #   docker:
-  #     # Docker image here that supports NodeJS
+  run-migrations:
+    docker:
+      # Docker image here that supports NodeJS
+      - image: python:3.7-alpine3.11
   #   steps:
   #     # Checkout code from git
   #     - run:
@@ -374,8 +372,8 @@ workflows:
               only: [test-feature-branch]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
       # - deploy-frontend:
       #     requires: [run-migrations]
       # - deploy-backend:
