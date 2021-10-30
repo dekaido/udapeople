@@ -15,6 +15,11 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: 404.html
+    Tags:
+        - Key: Project
+          Value: udacity
+        - Key: Application
+          Value: udapeople
   
   WebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -27,6 +32,11 @@ Resources:
           Principal: '*'
           Action: s3:GetObject
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
+    Tags:
+        - Key: Project
+          Value: udacity
+        - Key: Application
+          Value: udapeople
 
 Outputs:
   WebsiteURL:
