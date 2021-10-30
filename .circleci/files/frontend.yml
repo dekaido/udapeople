@@ -16,6 +16,8 @@ Resources:
         IndexDocument: index.html
         ErrorDocument: 404.html
     Tags:
+        - Key: Name
+          Value: s3-frontend-bucket
         - Key: Project
           Value: udacity
         - Key: Application
@@ -33,6 +35,8 @@ Resources:
           Action: s3:GetObject
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
     Tags:
+        - Key: Name
+          Value: s3-frontend-policy
         - Key: Project
           Value: udacity
         - Key: Application

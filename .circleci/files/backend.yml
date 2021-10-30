@@ -22,6 +22,8 @@ Resources:
           ToPort: 3030
           CidrIp: 0.0.0.0/0
     Tags:
+        - Key: Name
+          Value: ec2-security-group
         - Key: Project
           Value: udacity
         - Key: Application
@@ -33,7 +35,7 @@ Resources:
       InstanceType: t2.micro
       SecurityGroups:
         - Ref: InstanceSecurityGroup
-      KeyName: udapeople
+      KeyName: udacity
       # Ubuntu Server 20.04 LTS (HVM), SSD Volume Type
       ImageId: ami-03d5c68bab01f3496
       Tags:
