@@ -52,10 +52,10 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-<<parameters.workflowid>> --recursive
+            aws s3 rm s3://udapeople-abc1234 --recursive
             aws cloudformation delete-stack --stack-name InitialStack
-            aws cloudformation delete-stack --stack-name udapeople-backendstack-<<parameters.workflowid>>
-            aws cloudformation delete-stack --stack-name udapeople-frontendstack-<<parameters.workflowid>>
+            # aws cloudformation delete-stack --stack-name udapeople-backendstack-<<parameters.workflowid>>
+            # aws cloudformation delete-stack --stack-name udapeople-frontendstack-<<parameters.workflowid>>
       - trigger_slack_notif
 
   revert-migrations:
@@ -161,7 +161,6 @@ jobs:
             npm i    
             npm audit fix --audit-level=critical
       - notify_slack_error
-      - notify_slack_success
 
   scan-backend:
     docker:
@@ -177,7 +176,6 @@ jobs:
             npm i    
             npm audit fix --audit-level=critical
       - notify_slack_error
-      - notify_slack_success
 
   deploy-infrastructure:
     docker:
@@ -192,7 +190,7 @@ jobs:
             echo "CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}"
             echo "CIRCLE_WORKFLOW_ID: $CIRCLE_WORKFLOW_ID"
             echo "CIRCLE_BUILD_NUM: $CIRCLE_BUILD_NUM"
-            cat ~/.aws/config
+
       - run:
           name: Ensure back-end infrastructure exists
           command: |
