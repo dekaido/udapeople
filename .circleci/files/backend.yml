@@ -33,11 +33,11 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t3.micro
+      ImageId: ami-03d5c68bab01f3496Q
       SecurityGroups:
         - Ref: InstanceSecurityGroup
       KeyName: udapeople
       # Ubuntu Server 20.04 LTS (HVM), SSD Volume Type
-      ImageId: ami-03d5c68bab01f3496
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}

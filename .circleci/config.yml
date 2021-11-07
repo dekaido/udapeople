@@ -190,7 +190,14 @@ jobs:
             echo "CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}"
             echo "CIRCLE_WORKFLOW_ID: $CIRCLE_WORKFLOW_ID"
             echo "CIRCLE_BUILD_NUM: $CIRCLE_BUILD_NUM"
-
+      - run:
+          name: Deploy test infrastructure
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags Application=udapeople \
+              --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}  
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -230,7 +237,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: [50:51:f4:59:be:69:ca:00:2f:2f:c7:8f:5e:d8:11:3e]
+          fingerprints: ["4f:52:65:1f:09:a6:e0:f7:0e:20:f8:95:54:3b:9a:d4"]
       - attach_workspace:
           at: ~/
       - run:
@@ -239,11 +246,10 @@ jobs:
             apk add --update tar
             apk add --update gzip
             apk add --update ansible
-            pip install awscli
       - run:
           name: Configure server
           command: |
-            # Your code here
+            # ansible-playbook -i inventory.txt playbook.yml
             exit 1
       - destroy-environment:
           workflowid: ${CIRCLE_WORKFLOW_ID:0:7} 
