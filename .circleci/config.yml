@@ -189,6 +189,8 @@ jobs:
             echo "CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}"
             echo "CIRCLE_WORKFLOW_ID: $CIRCLE_WORKFLOW_ID"
             echo "CIRCLE_BUILD_NUM: $CIRCLE_BUILD_NUM"
+            echo "DOMAIN NAME: $DomainName"
+            echo "S3 URL: $S3URL"
     #   - run:
     #       name: Ensure back-end infrastructure exists
     #       command: |
