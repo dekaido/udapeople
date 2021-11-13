@@ -9,12 +9,12 @@ Parameters:
     Type: String
   S3URL:
     Description: URL for website hosted on S3
-    Default: !Sub "udapeople-test-s3bucket-${WorkflowID}.s3.amazonaws.com"
+    Default: "udapeople-test-s3bucket-$CIRCLE_WORKFLOW_ID.s3.amazonaws.com"
     Type: String
-  DomainName:
-    Description: Cloudfront Domain
-    Default: !GetAtt WebpageCDN.DomainName
-    Type: String
+#   DomainName:
+#     Description: Cloudfront Domain
+#     Default: !GetAtt WebpageCDN.DomainName
+#     Type: String
 
 commands:
   notify_slack_error:
@@ -202,11 +202,11 @@ jobs:
             echo "CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID:0:7}"
             echo "CIRCLE_WORKFLOW_ID: $CIRCLE_WORKFLOW_ID"
             echo "CIRCLE_BUILD_NUM: $CIRCLE_BUILD_NUM"
-            echo "DOMAIN NAME: $DomainName"
             echo "S3 URL: $S3URL"
             echo "S3 URL: http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
             echo "S3 URL: udapeople-${WorkflowID}.s3.amazonaws.com"
             echo "S3 URL: udapeople-test-s3bucket-${WorkflowID}.s3.amazonaws.com"
+        # echo "DOMAIN NAME: $DomainName"
 
     #   - run:
     #       name: Ensure back-end infrastructure exists
